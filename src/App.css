@@ -1,28 +1,36 @@
 body, html {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100vh;
   overflow-x: hidden;
+  background: #f5f5f5;
 }
 
 .page-container {
   position: relative;
+  width: 100%;
   min-height: 100vh;
-  background: rgba(0, 0, 0, 0.2);
 }
 
 .main-container {
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
+  height: 100vh;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 15px;
-  padding: 20px;
-  animation: gridFloat 20s ease-in-out infinite;
+  gap: 25px;
+  padding: 30px;
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+  animation: gentleFloat 20s ease-in-out infinite;
+  z-index: 1;
 }
 
-/* Default state: images visible */
 .image-cell {
   position: relative;
   width: 100%;
@@ -30,119 +38,129 @@ body, html {
   min-height: 200px;
   background-size: cover;
   background-position: center;
-  opacity: 1; /* Default full opacity */
-  transition: all 0.5s ease;
+  opacity: 0.85;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  transform: scale(1);
-  animation: pulse 5s infinite ease-in-out;
-  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0);
+  will-change: transform;
+  filter: contrast(1.1) brightness(0.95);
 }
 
-/* When cursor enters main-container, fade all images */
 .main-container:hover .image-cell {
-  opacity: 0.4;
+  transform: translateZ(10px);
+  opacity: 0.7;
 }
 
-/* When hovering specific image, make it fully visible */
 .main-container:hover .image-cell:hover {
+  transform: translateZ(30px) scale(1.03);
   opacity: 1;
-  transform: scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  filter: contrast(1.2) brightness(1.1);
+  box-shadow: 
+    0 15px 30px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(255, 255, 255, 0.1);
   z-index: 2;
-  filter: brightness(1.1);
-}
-
-/* Assign backgrounds with smooth transitions */
-.image-cell:nth-child(1) { 
-  background-image: url("../public/images/image1.jpg");
-  animation-delay: 0s;
-}
-.image-cell:nth-child(2) { 
-  background-image: url("../public/images/image2.jpeg");
-  animation-delay: 0.2s;
-}
-.image-cell:nth-child(3) { 
-  background-image: url("../public/images/image3.jpg");
-  animation-delay: 0.4s;
-}
-.image-cell:nth-child(4) { 
-  background-image: url("../public/images/image4.jpg");
-  animation-delay: 0.6s;
-}
-.image-cell:nth-child(5) { 
-  background-image: url("../public/images/image5.jpg");
-  animation-delay: 0.8s;
-}
-.image-cell:nth-child(6) { 
-  background-image: url("../public/images/image6.jpg");
-  animation-delay: 1s;
-}
-.image-cell:nth-child(7) { 
-  background-image: url("../public/images/BUS.jpg");
-  animation-delay: 1.2s;
-}
-.image-cell:nth-child(8) { 
-  background-image: url("../public/images/image8.jpg");
-  animation-delay: 1.4s;
-}
-.image-cell:nth-child(9) { 
-  background-image: url("../public/images/image9.jpg");
-  animation-delay: 1.6s;
 }
 
 .content-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.75);
   color: white;
-  z-index: 1;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.content-overlay form,
+.content-overlay .result-display {
+  background: rgba(255, 255, 255, 0.1);
   padding: 20px;
-  transition: all 0.3s ease;
-  backdrop-filter: none;
-}
-
-/* Add blur only when hovering over main-container */
-.main-container:hover ~ .content-overlay {
+  border-radius: 10px;
   backdrop-filter: blur(5px);
-  background: rgba(0, 0, 0, 0.4);
+  width: 80%;
+  max-width: 600px;
+  margin: 10px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Remove hover effect from content-overlay itself */
-.content-overlay:hover {
-  backdrop-filter: none;
-  background: rgba(0, 0, 0, 0.6);
+.content-overlay h1,
+.content-overlay h2,
+.content-overlay h3 {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1rem;
 }
 
-/* Animations */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
+.content-overlay p,
+.content-overlay label,
+.content-overlay input,
+.content-overlay textarea {
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.content-overlay input,
+.content-overlay textarea {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  color: #333;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.content-overlay button {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.content-overlay button:hover {
+  background: #357abd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Gentle row animations */
+.image-cell:nth-child(3n + 1) {
+  animation: gentleRise 6s ease-in-out infinite;
+}
+
+.image-cell:nth-child(3n + 2) {
+  animation: gentleRise 6s ease-in-out infinite 2s;
+}
+
+.image-cell:nth-child(3n + 3) {
+  animation: gentleRise 6s ease-in-out infinite 4s;
+}
+
+@keyframes gentleRise {
+  0%, 100% {
+    transform: translateY(0) translateZ(0);
   }
   50% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
+    transform: translateY(-5px) translateZ(5px);
   }
 }
 
-@keyframes gridFloat {
-  0% {
-    transform: translateY(0px);
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0) rotateX(1deg);
   }
   50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
+    transform: translateY(-5px) rotateX(-1deg);
   }
 }
 
@@ -150,28 +168,42 @@ body, html {
 @media (max-width: 768px) {
   .main-container {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 10px;
+    gap: 20px;
+    padding: 20px;
   }
   
   .image-cell {
-    min-height: 150px;
+    min-height: 180px;
+  }
+
+  .content-overlay form,
+  .content-overlay .result-display {
+    width: 90%;
+    padding: 15px;
   }
 }
 
 @media (max-width: 480px) {
   .main-container {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(9, 1fr);
-    gap: 8px;
+    gap: 15px;
+    padding: 15px;
   }
   
   .image-cell {
-    min-height: 120px;
+    min-height: 160px;
+  }
+
+  .content-overlay {
+    padding: 15px;
   }
 }
 
-.main-container:hover + .content-overlay,
-.content-overlay:hover {
-  background: rgba(0, 0, 0, 0.4);
+.scroll-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px 20px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
 }

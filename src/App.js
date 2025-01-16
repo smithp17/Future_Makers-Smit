@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import EducatorForm from "./components/EducatorForm";
 import ResultDisplay from "./components/ResultDisplay";
 import './App.css';
@@ -6,50 +6,46 @@ import './App.css';
 function App() {
   const [responses, setResponses] = useState(null);
   const [aiOutput, setAIOutput] = useState(null);
-  const [imageOrder, setImageOrder] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-  const [isHovering, setIsHovering] = useState(false);
-
-  // Shuffle images every 15 seconds
-  useEffect(() => {
-    const shuffleInterval = setInterval(() => {
-      if (!isHovering) {  // Only shuffle if not hovering
-        setImageOrder(prevOrder => {
-          const newOrder = [...prevOrder];
-          for (let i = newOrder.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
-          }
-          return newOrder;
-        });
-      }
-    }, 15000);
-
-    return () => clearInterval(shuffleInterval);
-  }, [isHovering]);
+  const [imageOrder] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
   const handleGenerate = (formData, aiOutput) => {
     setResponses(formData);
     setAIOutput(aiOutput);
   };
 
+  const getImagePath = (index) => {
+    switch(index) {
+      case 0: return '/images/image1.jpg';
+      case 1: return '/images/image2.jpeg';
+      case 2: return '/images/image3.jpg';
+      case 3: return '/images/image4.jpg';
+      case 4: return '/images/image5.jpg';
+      case 5: return '/images/image6.jpg';
+      case 6: return '/images/BUS.jpg';
+      case 7: return '/images/image8.jpg';
+      case 8: return '/images/image9.jpg';
+      default: return '/images/image1.jpg';
+    }
+  };
+
   return (
     <div className="page-container">
-      <div 
-        className="main-container"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        {imageOrder.map((num) => (
+      <div className="main-container">
+        {imageOrder.map((num, index) => (
           <div 
             key={num} 
             className="image-cell"
-            style={{ animationDelay: `${num * 0.2}s` }}
+            style={{ 
+              backgroundImage: `url(${getImagePath(index)})`
+            }}
           />
         ))}
       </div>
       <div className="content-overlay">
-        <EducatorForm onGenerate={handleGenerate} />
-        <ResultDisplay responses={responses} aiOutput={aiOutput} />
+        <div className="scroll-wrapper">
+          <EducatorForm onGenerate={handleGenerate} />
+          <ResultDisplay responses={responses} aiOutput={aiOutput} />
+        </div>
       </div>
     </div>
   );
