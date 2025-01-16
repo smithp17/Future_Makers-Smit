@@ -8,9 +8,11 @@ function App() {
   const [aiOutput, setAIOutput] = useState(null);
   const [imageOrder] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-  const handleGenerate = (formData, aiOutput) => {
+  const handleGenerate = (formData, generatedOutput) => {
+    console.log('Form Data:', formData);
+    console.log('Generated Output:', generatedOutput);
     setResponses(formData);
-    setAIOutput(aiOutput);
+    setAIOutput(generatedOutput);
   };
 
   const getImagePath = (index) => {
