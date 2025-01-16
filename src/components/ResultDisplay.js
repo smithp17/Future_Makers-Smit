@@ -6,6 +6,13 @@ const ResultDisplay = ({ responses, aiOutput }) => {
   const weeklyHours = Number(responses.time);
   const totalHours = weeklyHours * 10;
 
+  // Parse the AI output
+  // Assuming aiOutput contains the generated assessment and lesson plan
+  const outputSections = {
+    lessonPlan: aiOutput, // First part of the output
+    assessment: aiOutput  // Second part of the output (assessment questions)
+  };
+
   return (
     <div className="result-display">
       {/* Course Overview Card */}
@@ -33,81 +40,28 @@ const ResultDisplay = ({ responses, aiOutput }) => {
         </div>
       </div>
 
-      {/* Curriculum Plan Card */}
-      <div className="curriculum-card">
+      {/* Lesson Plan Card */}
+      <div className="lesson-plan-card">
         <div className="card-header">
-          <h2>🎯 Curriculum Plan</h2>
+          <h2>📚 Generated Lesson Plan</h2>
         </div>
-        <div className="curriculum-content">
-          <div className="section">
-            <h3>Learning Objectives</h3>
-            <div className="content-text">
-              {aiOutput}
-            </div>
-          </div>
-
-          <div className="section">
-            <h3>Standards Alignment</h3>
-            <div className="standards-grid">
-              <div className="standard-item">
-                <h4>NGSS</h4>
-                <ul>
-                  <li>PS3.B: Energy Transfer</li>
-                  <li>ETS1.B: Design Solutions</li>
-                </ul>
-              </div>
-              <div className="standard-item">
-                <h4>CASEL SEL</h4>
-                <ul>
-                  <li>Self-Awareness</li>
-                  <li>Social Awareness</li>
-                </ul>
-              </div>
-            </div>
+        <div className="content-section">
+          <div className="ai-generated-content">
+            {outputSections.lessonPlan}
           </div>
         </div>
       </div>
 
-      {/* Weekly Schedule Card */}
-      <div className="schedule-card">
-        <div className="card-header">
-          <h2>📅 Weekly Schedule</h2>
-        </div>
-        <div className="timeline-grid">
-          <div className="timeline-item">
-            <span className="time">{Math.round(weeklyHours * 0.3)} hrs</span>
-            <div className="activity-details">
-              <h4>Theory & Concepts</h4>
-              <p>Introduction to flying machines, energy concepts, vocabulary</p>
-            </div>
-          </div>
-          <div className="timeline-item">
-            <span className="time">{Math.round(weeklyHours * 0.4)} hrs</span>
-            <div className="activity-details">
-              <h4>Hands-on Building</h4>
-              <p>Construction, testing, and iteration of flying machines</p>
-            </div>
-          </div>
-          <div className="timeline-item">
-            <span className="time">{Math.round(weeklyHours * 0.3)} hrs</span>
-            <div className="activity-details">
-              <h4>Assessment & Reflection</h4>
-              <p>Documentation, testing results, and group discussions</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Assessment Strategy Card */}
+      {/* AI Generated Assessment Card */}
       <div className="assessment-card">
         <div className="card-header">
-          <h2>📝 Assessment Strategy</h2>
+          <h2>📝 AI Generated Assessment</h2>
+          <span className="grade-level">{responses.grade}</span>
         </div>
         <div className="assessment-content">
           <div className="section">
-            <h3>Evaluation Methods</h3>
-            <div className="content-text">
-              {aiOutput}
+            <div className="ai-generated-content">
+              {outputSections.assessment}
             </div>
           </div>
         </div>
