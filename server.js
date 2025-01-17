@@ -19,7 +19,7 @@ app.post("/api/generate", async (req, res) => {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Switch to gpt-3.5-turbo or gpt-4
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: prompt },
@@ -29,10 +29,11 @@ app.post("/api/generate", async (req, res) => {
 
     res.status(200).json({ text: response.choices[0].message.content });
   } catch (error) {
-    console.error("Error generating AI response:", error);
-    res.status(500).send("Error generating AI response");
+    console.error("Error generating AI response:", error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || "Error generating AI response" });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
