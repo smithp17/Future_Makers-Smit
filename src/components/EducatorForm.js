@@ -14,39 +14,67 @@ function EducatorForm({ onGenerate }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(""); // Clear error when user starts typing
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (error) {
-      alert("Please fix the errors before submitting the form.");
+    if (!formData.time || !formData.grade || !formData.environment || !formData.confidence) {
+      setError("Please fill out all required fields.");
       return;
     }
 
     setLoading(true);
+    setError("");
 
     const prompt = `
-    Time: ${formData.time} hours per week
-    Grade: ${formData.grade}
-    Environment: ${formData.environment}
-    Confidence: ${formData.confidence}
-    Assessment: ${formData.assessment}
+You are an educational assistant.
 
-    Generate a lesson plan and assessment based on these details.
+Here are the details:
+- Time: ${formData.time} hours per week
+- Grade: ${formData.grade}
+- Environment: ${formData.environment}
+- Confidence: ${formData.confidence}
+- Assessment Required: ${formData.assessment === "Yes" ? "Yes" : "No"}
+
+Generate a detailed lesson plan and an assessment based on these details.
     `;
 
+    const API_URL =
+      process.env.NODE_ENV === "production"
+        ? "/api/generate"
+        : "http://localhost:8888/.netlify/functions/generate";
+
     try {
-      const response = await fetch("http://localhost:5000/api/generate", {
+      console.log("Sending request to API:", API_URL);
+      console.log("Prompt:", prompt);
+
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
 
+      if (!response.ok) {
+        const responseText = await response.text();
+        throw new Error(`API error: ${response.status} - ${response.statusText}. Response: ${responseText}`);
+      }
+
       const data = await response.json();
+      console.log("Generated Output:", data.text);
       onGenerate(formData, data.text);
+
+      setFormData({
+        time: "",
+        grade: "",
+        environment: "",
+        confidence: "",
+        assessment: "Yes",
+      });
     } catch (error) {
       console.error("Error generating AI response:", error);
+      setError(`Failed to generate a response: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -56,6 +84,8 @@ function EducatorForm({ onGenerate }) {
     <div className="container mt-5">
       <h2 className="text-center mb-4">Educator Interview</h2>
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">
+        {error && <div className="alert alert-danger">{error}</div>}
+
         <div className="mb-3">
           <label className="form-label">
             How much time do you have for this activity (hours per week)?
@@ -81,6 +111,7 @@ function EducatorForm({ onGenerate }) {
             value={formData.grade}
             onChange={handleChange}
             className="form-select"
+            required
           >
             <option value="">Select Grade</option>
             <option value="Kindergarten">Kindergarten</option>
@@ -99,6 +130,7 @@ function EducatorForm({ onGenerate }) {
             value={formData.environment}
             onChange={handleChange}
             className="form-select"
+            required
           >
             <option value="">Select Environment</option>
             <option value="Classroom">Classroom</option>
@@ -116,6 +148,7 @@ function EducatorForm({ onGenerate }) {
             value={formData.confidence}
             onChange={handleChange}
             className="form-select"
+            required
           >
             <option value="">Select Confidence Level</option>
             <option value="Very Confident">Very Confident</option>
@@ -124,42 +157,38 @@ function EducatorForm({ onGenerate }) {
           </select>
         </div>
         <div className="mb-3">
-        <label className="form-label">Do you want to include an assessment?</label>
-        <div className="btn-group w-100" role="group">
+          <label className="form-label">Do you want to include an assessment?</label>
+          <div className="btn-group w-100" role="group">
             <input
-            type="radio"
-            className="btn-check"
-            name="assessment"
-            id="assessment-yes"
-            value="Yes"
-            checked={formData.assessment === "Yes"}
-            onChange={handleChange}
+              type="radio"
+              className="btn-check"
+              name="assessment"
+              id="assessment-yes"
+              value="Yes"
+              checked={formData.assessment === "Yes"}
+              onChange={handleChange}
             />
             <label className="btn btn-outline-primary" htmlFor="assessment-yes">
-            Yes
+              Yes
             </label>
 
             <input
-            type="radio"
-            className="btn-check"
-            name="assessment"
-            id="assessment-no"
-            value="No"
-            checked={formData.assessment === "No"}
-            onChange={handleChange}
+              type="radio"
+              className="btn-check"
+              name="assessment"
+              id="assessment-no"
+              value="No"
+              checked={formData.assessment === "No"}
+              onChange={handleChange}
             />
             <label className="btn btn-outline-primary" htmlFor="assessment-no">
-            No
+              No
             </label>
-        </div>
+          </div>
         </div>
 
         <div className="text-center">
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? (
               <span>
                 <span className="spinner-border spinner-border-sm me-2"></span>

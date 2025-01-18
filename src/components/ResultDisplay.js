@@ -1,16 +1,20 @@
 import React from "react";
 
 const ResultDisplay = ({ responses, aiOutput }) => {
-  if (!responses || !aiOutput) return null;
+  console.log("Responses:", responses);
+  console.log("AI Output:", aiOutput);
+
+  if (!responses || !aiOutput) {
+    return <div className="result-display">No results to display yet. Please generate a lesson plan.</div>;
+  }
 
   const weeklyHours = Number(responses.time);
   const totalHours = weeklyHours * 10;
 
   // Parse the AI output
-  // Assuming aiOutput contains the generated assessment and lesson plan
   const outputSections = {
-    lessonPlan: aiOutput, // First part of the output
-    assessment: aiOutput  // Second part of the output (assessment questions)
+    lessonPlan: aiOutput?.lessonPlan || aiOutput || "Lesson plan not available.",
+    assessment: aiOutput?.assessment || aiOutput || "Assessment not available.",
   };
 
   return (
@@ -46,9 +50,7 @@ const ResultDisplay = ({ responses, aiOutput }) => {
           <h2>📚 Generated Lesson Plan</h2>
         </div>
         <div className="content-section">
-          <div className="ai-generated-content">
-            {outputSections.lessonPlan}
-          </div>
+          <div className="ai-generated-content">{outputSections.lessonPlan}</div>
         </div>
       </div>
 
@@ -60,9 +62,7 @@ const ResultDisplay = ({ responses, aiOutput }) => {
         </div>
         <div className="assessment-content">
           <div className="section">
-            <div className="ai-generated-content">
-              {outputSections.assessment}
-            </div>
+            <div className="ai-generated-content">{outputSections.assessment}</div>
           </div>
         </div>
       </div>
