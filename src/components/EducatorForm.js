@@ -30,7 +30,13 @@ function EducatorForm({ onGenerate }) {
     setError("");
 
     const promptLessonPlan = `
-You are an expert educational assistant. Generate a detailed lesson plan for an educator based on the following details:
+You are an expert educational assistant. Generate a detailed 10 week lesson plan for an educator based on the following details
+  - Fun facts or trivia about domain which is mentioned below.
+  - A creative storytelling approach to introduce key concepts.
+  - Suggestions for visual or hands-on elements to maintain engagement.
+- Core concepts and quick activities.
+- Minimal setup and materials.
+:
 - Grade: ${formData.grade}
 - Environment: ${formData.environment}
 - Time: ${formData.time} hours per week
@@ -48,7 +54,12 @@ You are an expert educational assistant. Create a reflective and practical asses
 - Educator Confidence: ${formData.confidence}
 - Domain: ${formData.domain}
 
-Ensure the assessment aligns with the lesson plan and includes specific questions or tasks for the learners in the selected domain.
+Ensure the assessment aligns with the lesson plan and includes specific questions or tasks for the learners in the selected domain.Ensure the assessments:
+1. Encourage critical thinking and problem-solving.
+2. Include both individual and group tasks, if appropriate.
+3. Are engaging and aligned with the fun, storytelling, or hands-on elements in the lesson plan.
+4. Use domain-specific examples (e.g., trivia or challenges related to domain.
+
 `;
 
     const API_URL =
