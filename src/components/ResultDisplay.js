@@ -5,7 +5,7 @@ const ResultDisplay = ({ responses, aiOutput }) => {
   console.log("AI Output:", aiOutput);
 
   if (!responses || !aiOutput) {
-    return <div className="result-display">No results to display yet. Please generate a lesson plan.</div>;
+    return <div className="result-display">Let the A(I)ction Begin.</div>;
   }
 
   const weeklyHours = Number(responses.time);

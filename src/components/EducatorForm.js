@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 function EducatorForm({ onGenerate }) {
   const [formData, setFormData] = useState({
     time: "",
@@ -59,7 +58,7 @@ Ensure the assessment aligns with the lesson plan and includes specific question
 2. Include both individual and group tasks, if appropriate.
 3. Are engaging and aligned with the fun, storytelling, or hands-on elements in the lesson plan.
 4. Use domain-specific examples (e.g., trivia or challenges related to domain.
-
+at last just mention Happy to help- your AI assistant
 `;
 
     const API_URL =
@@ -112,8 +111,10 @@ Ensure the assessment aligns with the lesson plan and includes specific question
   };
 
   return (
+    <div className="title-wrapper">
+     <h1 className="main-title">Edunnovate ⭐ </h1>
     <div className="container mt-5">
-      <h2 className="text-center mb-4">Educator Interview</h2>
+      <h3 className="text-center mb-4">Educate and Innovate, Let AI Elevate!!</h3>
       <form onSubmit={handleSubmit} className="p-4 border rounded shadow">
         {error && <div className="alert alert-danger">{error}</div>}
 
@@ -243,7 +244,7 @@ Ensure the assessment aligns with the lesson plan and includes specific question
           </button>
         </div>
       </form>
-    </div>
+    </div></div>
   );
 }
 
