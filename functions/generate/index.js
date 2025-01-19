@@ -36,18 +36,21 @@ exports.handler = async (event) => {
     }
 
     console.log("Calling OpenAI API...");
+
+    // Request to OpenAI for generating a response
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo", // Adjust the model as necessary
       messages: [
-        { role: "system", content: "You are a helpful assistant." },
+        { role: "system", content: "You are a helpful educational assistant." },
         { role: "user", content: prompt },
       ],
-      max_tokens: 500,
+      max_tokens: 1000, // Ensure enough tokens for detailed responses
     });
 
     const aiResponse = response?.choices?.[0]?.message?.content;
     console.log("AI Response:", aiResponse);
 
+    // Return AI-generated response
     return {
       statusCode: 200,
       headers: {

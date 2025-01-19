@@ -41,6 +41,10 @@ const ResultDisplay = ({ responses, aiOutput }) => {
             <span className="label">Educator Confidence:</span>
             <span className="value">{responses.confidence}</span>
           </div>
+          <div className="summary-item">
+            <span className="label">Domain:</span>
+            <span className="value">{responses.domain || "Not specified"}</span>
+          </div>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ function EducatorForm({ onGenerate }) {
     environment: "",
     confidence: "",
     assessment: "Yes",
+    domain: "", // New domain field
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +21,7 @@ function EducatorForm({ onGenerate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.time || !formData.grade || !formData.environment || !formData.confidence) {
+    if (!formData.time || !formData.grade || !formData.environment || !formData.confidence || !formData.domain) {
       setError("Please fill out all required fields.");
       return;
     }
@@ -28,18 +29,27 @@ function EducatorForm({ onGenerate }) {
     setLoading(true);
     setError("");
 
-    const prompt = `
-You are an educational assistant.
-
-Here are the details:
-- Time: ${formData.time} hours per week
+    const promptLessonPlan = `
+You are an expert educational assistant. Generate a detailed lesson plan for an educator based on the following details:
 - Grade: ${formData.grade}
 - Environment: ${formData.environment}
-- Confidence: ${formData.confidence}
-- Assessment Required: ${formData.assessment === "Yes" ? "Yes" : "No"}
+- Time: ${formData.time} hours per week
+- Educator Confidence: ${formData.confidence}
+- Domain: ${formData.domain}
 
-Generate a detailed lesson plan and an assessment based on these details.
-    `;
+Consider the time parameter and divide the content into weekly sessions. Make sure the lesson is engaging and age-appropriate for the selected domain.
+`;
+
+    const promptAssessment = `
+You are an expert educational assistant. Create a reflective and practical assessment for an educator based on the following details:
+- Grade: ${formData.grade}
+- Environment: ${formData.environment}
+- Time: ${formData.time} hours per week
+- Educator Confidence: ${formData.confidence}
+- Domain: ${formData.domain}
+
+Ensure the assessment aligns with the lesson plan and includes specific questions or tasks for the learners in the selected domain.
+`;
 
     const API_URL =
       process.env.NODE_ENV === "production"
@@ -47,23 +57,32 @@ Generate a detailed lesson plan and an assessment based on these details.
         : "http://localhost:8888/.netlify/functions/generate";
 
     try {
-      console.log("Sending request to API:", API_URL);
-      console.log("Prompt:", prompt);
-
-      const response = await fetch(API_URL, {
+      const lessonPlanResponse = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: promptLessonPlan }),
       });
 
-      if (!response.ok) {
-        const responseText = await response.text();
-        throw new Error(`API error: ${response.status} - ${response.statusText}. Response: ${responseText}`);
+      const assessmentResponse = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: promptAssessment }),
+      });
+
+      if (!lessonPlanResponse.ok || !assessmentResponse.ok) {
+        throw new Error("Failed to fetch from AI API.");
       }
 
-      const data = await response.json();
-      console.log("Generated Output:", data.text);
-      onGenerate(formData, data.text);
+      const lessonPlanData = await lessonPlanResponse.json();
+      const assessmentData = await assessmentResponse.json();
+
+      console.log("Lesson Plan:", lessonPlanData.text);
+      console.log("Assessment:", assessmentData.text);
+
+      onGenerate(formData, {
+        lessonPlan: lessonPlanData.text,
+        assessment: assessmentData.text,
+      });
 
       setFormData({
         time: "",
@@ -71,6 +90,7 @@ Generate a detailed lesson plan and an assessment based on these details.
         environment: "",
         confidence: "",
         assessment: "Yes",
+        domain: "", // Reset domain
       });
     } catch (error) {
       console.error("Error generating AI response:", error);
@@ -87,9 +107,7 @@ Generate a detailed lesson plan and an assessment based on these details.
         {error && <div className="alert alert-danger">{error}</div>}
 
         <div className="mb-3">
-          <label className="form-label">
-            How much time do you have for this activity (hours per week)?
-          </label>
+          <label className="form-label">How much time do you have for this activity (hours per week)?</label>
           <input
             type="number"
             name="time"
@@ -103,9 +121,7 @@ Generate a detailed lesson plan and an assessment based on these details.
           />
         </div>
         <div className="mb-3">
-          <label className="form-label">
-            What grade(s) or age group(s) are your learners?
-          </label>
+          <label className="form-label">What grade(s) or age group(s) are your learners?</label>
           <select
             name="grade"
             value={formData.grade}
@@ -140,9 +156,7 @@ Generate a detailed lesson plan and an assessment based on these details.
           </select>
         </div>
         <div className="mb-3">
-          <label className="form-label">
-            How confident are you in using hands-on projects?
-          </label>
+          <label className="form-label">How confident are you in using hands-on projects?</label>
           <select
             name="confidence"
             value={formData.confidence}
@@ -154,6 +168,25 @@ Generate a detailed lesson plan and an assessment based on these details.
             <option value="Very Confident">Very Confident</option>
             <option value="Somewhat Confident">Somewhat Confident</option>
             <option value="Not Confident">Not Confident</option>
+          </select>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Select a Domain</label>
+          <select
+            name="domain"
+            value={formData.domain}
+            onChange={handleChange}
+            className="form-select"
+            required
+          >
+            <option value="">Select Domain</option>
+            <option value="STEM">STEM</option>
+            <option value="Sports">Sports</option>
+            <option value="Good Habits">Good Habits</option>
+            <option value="World Leaders">World Leaders</option>
+            <option value="Geography">Geography</option>
+            <option value="eSports">eSports</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div className="mb-3">
@@ -171,7 +204,6 @@ Generate a detailed lesson plan and an assessment based on these details.
             <label className="btn btn-outline-primary" htmlFor="assessment-yes">
               Yes
             </label>
-
             <input
               type="radio"
               className="btn-check"
